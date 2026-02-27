@@ -33880,7 +33880,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1269909930989406924, guid: 0e5d743b868373f42afd99cd63908ad5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 81.64
+      value: 80.357
       objectReference: {fileID: 0}
     - target: {fileID: 1269909930989406924, guid: 0e5d743b868373f42afd99cd63908ad5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -33958,10 +33958,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   floatingAudioSource: {fileID: 0}
-  velocityChangeFloor: 0.2
-  velocityChangeHardFloor: 0
-  softBounce: {fileID: 8300000, guid: 670383ec49ee6b746a48353b8a148388, type: 3}
-  hardBounce: {fileID: 8300000, guid: db467e5a29a8a6446b3b854d8358af58, type: 3}
+  velocityChangeSoftFloor: 0.3
+  velocityChangeHardFloor: 0.7
+  minPitchShift: 0.75
+  maxPitchShift: 1.25
+  solidPlasticSoftBounce: {fileID: 8300000, guid: 52fdf243073f90a4899eaf0a2173cffa, type: 3}
+  solidPlasticHardBounce: {fileID: 8300000, guid: a6bb881fb9b180046ad62ea72011cc3f, type: 3}
+  plasticBagSoftBounce: {fileID: 8300000, guid: 52fdf243073f90a4899eaf0a2173cffa, type: 3}
+  plasticBagHardBounce: {fileID: 8300000, guid: 45fb2f7111a06624e8986c8e86c7adae, type: 3}
+  metalBoxSoftBounce: {fileID: 8300000, guid: 0b7942f6449107a44ba5e56d49c47974, type: 3}
+  metalBoxHardBounce: {fileID: 8300000, guid: 3b457e7f525f82d47b2e55bc9fde3cba, type: 3}
 --- !u!114 &1639013397
 MonoBehaviour:
   m_ObjectHideFlags: 0
