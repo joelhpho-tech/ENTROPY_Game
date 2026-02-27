@@ -189,7 +189,6 @@ public class PickupScript : MonoBehaviour
             {
                 //unmute the thrown object
                 StartCoroutine(heldObj.GetComponent<FloatingImpactAudio>().unmuteAfterTime());
-                Debug.Log("unmute");
             }
 
             MoveObject(); //keep object position at holdPos
