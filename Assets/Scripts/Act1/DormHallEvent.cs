@@ -60,7 +60,8 @@ public class DormHallEvent : MonoBehaviour, ISaveable
         
     }
 
-    public void OnInteract(InputAction.CallbackContext context)
+    // This method is called by the input system when the player interacts with the wrist monitor
+    public void OnInteractWristMonitor(InputAction.CallbackContext context)
     {
 
         //Handle wrist monitor pickup

@@ -37,6 +37,8 @@ public class PlayerUIManager : MonoBehaviour
     TerminalManager terminalManager;
     [SerializeField]
     WristMonitor wristMonitor;
+    [SerializeField]
+    Flashlight flashlight;
 
 
     [Header("== UI Canvas ==")]
@@ -386,14 +388,6 @@ public class PlayerUIManager : MonoBehaviour
                 case "DoorButton":
                     RayCastHandleDoorButton(interactableHit);
                     break;
-                case "LockdownLever":
-                    //Debug.Log("LockdownLever detected");
-                    RayCastHandleManualLockdown(interactableHit);
-                    break;
-                case "WristGrab":
-                    //Debug.Log("WristMonitor Detected");
-                    RayCastHandleManualLockdown(interactableHit);
-                    break;
                 case "StimDispenser":
                     //Debug.Log("WristMonitor Detected");
                     RayCastHandleStimDispenser(interactableHit);
@@ -402,9 +396,18 @@ public class PlayerUIManager : MonoBehaviour
                     //Debug.Log("Terminal Detected");
                     RayCastHandleTerminal(interactableHit);
                     break;
-                //case "PickupObject":
-                //    RayCastHandleFloatingObject(interactableHit);
-                //    break;
+                case "LockdownLever":
+                    //Debug.Log("LockdownLever detected");
+                    RayCastHandleManualLockdown(interactableHit);
+                    break;
+                case "WristGrab":
+                    Debug.Log("WristMonitor Detected");
+                    RayCastHandleWristMonitor(interactableHit);
+                    break;
+                case "FlashGrab":
+                    //Debug.Log("Flashlight Detected");
+                    RaycastHandleFlashlight(interactableHit);
+                    break;
                 default:
                     break;
             }
@@ -420,6 +423,10 @@ public class PlayerUIManager : MonoBehaviour
                 {
                     stim.CanRefill = false;
                 }
+            }
+            if(flashlight.LookingAtFlashlight)
+            {
+                flashlight.LookingAtFlashlight = false;
             }
             //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             //dorm hall event call for some reason hardcoded into this script, need to come back and make this more efficient and less hardcoded,
@@ -558,6 +565,48 @@ public class PlayerUIManager : MonoBehaviour
         }
     }
 
+    public void RaycastHandleFlashlight(RaycastHit? hit)
+    {
+        if (hit.Value.transform.GetComponentsInChildren<Transform>().FirstOrDefault(t => t.CompareTag("FlashGrab")))
+        {
+            //Debug.Log("flashlight detected");
+            flashlight.LookingAtFlashlight = true;
+            ShowBillboardUI(keyFIndicator, hit.Value.transform.parent.transform, "pick up flashlight");
+        }
+        else
+        {
+            flashlight.LookingAtFlashlight = false;
+            HideBillboardUI();
+            HideInteractables();
+        }
+    }
+
+    public void RayCastHandleWristMonitor(RaycastHit? hit)
+    {
+        //if the dormhall event is active and grabbable, and we are looking at the wrist monitor, show the ui for it
+        if (hit.Value.transform.CompareTag("WristGrab") && dormHallEvent && dormHallEvent.IsGrabbable)
+        {
+            //dor
+            if (dormHallEvent.IsGrabbable)
+            {
+                dormHallEvent.CanGrab = true;
+                ShowBillboardUI(keyFIndicator, hit.Value.transform.parent.transform, "pick up wrist monitor");
+
+            }
+            else if (!dormHallEvent.IsGrabbable)
+            {
+                dormHallEvent.CanGrab = false;
+                HideInteractables();
+            }
+        }
+        else
+        {
+            lockdownEvent.CanPull = false;
+            dormHallEvent.CanGrab = false;
+            HideInteractables();
+        }
+    }
+
     public void RayCastHandleManualLockdown(RaycastHit? hit)
     {
         // lever has been pulled, manual terminal is "active" to be used
@@ -574,27 +623,6 @@ public class PlayerUIManager : MonoBehaviour
             lockdownEvent.CanPull = true;
 
             ShowBillboardUI(keyFIndicator, hit.Value.transform.parent.transform, "Initiate Lever Release");
-        }
-        else if (hit.Value.transform.CompareTag("WristGrab") && dormHallEvent && dormHallEvent.IsGrabbable)
-        {
-            if (dormHallEvent.IsGrabbable)
-            {
-                dormHallEvent.CanGrab = true;
-                ShowBillboardUI(keyFIndicator, hit.Value.transform.parent.transform, "take wrist monitor");
-       
-            }
-            else if (!dormHallEvent.IsGrabbable)
-            {
-                dormHallEvent.CanGrab = false;
-                HideInteractables();
-            }
-        }
-        else
-        {
-
-            lockdownEvent.CanPull = false;
-            dormHallEvent.CanGrab = false;
-            HideInteractables();
         }
     }
 
@@ -1073,7 +1101,8 @@ public class PlayerUIManager : MonoBehaviour
             if (!pickupScript.CanPickUp &&
                 !CanPushOffNow &&
                 (terminalManager.currentTerminal == null || terminalManager.currentTerminal.isActivated) &&
-                !lookingAtStim &&
+                !lookingAtStim && 
+                !flashlight.LookingAtFlashlight &&
                 (dormHallEvent != null && !dormHallEvent.CanGrab) && 
                 (lockdownEvent != null && !lockdownEvent.CanPull))
             {
@@ -1098,13 +1127,13 @@ public class PlayerUIManager : MonoBehaviour
             else
             {
                 // debug for billboard UI hiding
-                Debug.Log("prevented hiding");
-                Debug.Log(!pickupScript.CanPickUp);
-                Debug.Log(!CanPushOffNow);
-                Debug.Log(terminalManager.currentTerminal == null || terminalManager.currentTerminal.isActivated);
-                Debug.Log(!dormHallEvent.CanGrab);
-                Debug.Log(!lockdownEvent.CanPull);
-                Debug.Log(!lookingAtStim);
+                //Debug.Log("prevented hiding");
+                //Debug.Log(!pickupScript.CanPickUp);
+                //Debug.Log(!CanPushOffNow);
+                //Debug.Log(terminalManager.currentTerminal == null || terminalManager.currentTerminal.isActivated);
+                //Debug.Log(!dormHallEvent.CanGrab);
+                //Debug.Log(!lockdownEvent.CanPull);
+                //Debug.Log(!lookingAtStim);
             }
 
 

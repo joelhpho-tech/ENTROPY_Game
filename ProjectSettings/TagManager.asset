@@ -15,6 +15,7 @@ TagManager:
   - Terminal
   - Bar
   - UICamera
+  - FlashGrab
   layers:
   - Default
   - TransparentFX
