@@ -571,7 +571,7 @@ public class PlayerUIManager : MonoBehaviour
         {
             //Debug.Log("flashlight detected");
             flashlight.LookingAtFlashlight = true;
-            ShowBillboardUI(keyFIndicator, hit.Value.transform.parent.transform, "pick up flashlight");
+            ShowBillboardUI(keyFIndicator, hit.Value.transform, "pick up flashlight");
         }
         else
         {

@@ -31,8 +31,11 @@ public class Flashlight : MonoBehaviour
     public bool FlashlightEquipped
     {
         get { return flashlightEquipped; }
-        set { flashlightEquipped = value;
-            flashlightObjectParentedToPlayer.SetActive(value);
+        set {
+            flashlightEquipped = value;
+            //Debug.Log("Flashlight equipped: " + flashlightEquipped);
+            flashlightObjectParentedToPlayer.SetActive(flashlightEquipped);
+            //Debug.Log("Flashlight object parented to player active: " + flashlightObjectParentedToPlayer.activeSelf);
         }
     }
     // bool to check wether or not the player is looking at the flashlight in the scene,
@@ -47,7 +50,8 @@ public class Flashlight : MonoBehaviour
     // the player instead will use the flashlight parented to ZeroGPlayer
     public bool HasFlashlightInScene
     {
-        get { return !flashlightObjectInScene.activeSelf; }
+        get { 
+            return !flashlightObjectInScene.activeSelf; }
         set { flashlightObjectInScene.SetActive(!value); }
     }
 
@@ -56,21 +60,20 @@ public class Flashlight : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        //ensure the  flashlight parented to the player is off at the start of the game
-        flashlightObjectParentedToPlayer.SetActive(false);
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-
+       
     }
 
     public void EquipFlashlightFromScene(InputAction.CallbackContext context)
     {
         if (LookingAtFlashlight 
-            && !HasFlashlightInScene 
-            && !FlashlightEquipped
+            && !HasFlashlightInScene
+            &&!FlashlightEquipped
             && context.performed)
         {
             //go through the lights of the scene object, match what ever their status is with the flashlightOn bool
@@ -80,9 +83,9 @@ public class Flashlight : MonoBehaviour
                 //Debug.Log("Light: " + flashlightOn);
             }
             HasFlashlightInScene = true; // disables scene flashlight
-            flashlightEquipped = true;   // enables player flashlight
+            FlashlightEquipped = true;   // enables player flashlight
             //set the default of the flashlight of the lights of the player flashlight from the scene flashlight
-            Debug.Log("Toggling flashlight " + flashlightOn);
+            //Debug.Log("Toggling flashlight " + flashlightOn);
             foreach (Light light in flashlightObjectParentedToPlayer.GetComponentsInChildren<Light>())
             {
                 light.enabled = flashlightOn;
@@ -92,11 +95,21 @@ public class Flashlight : MonoBehaviour
         }
     }
 
-    public void EquipFlashlightFromInventory(InputAction.CallbackContext context)
+    public void ToggleFlashlightFromInventory(InputAction.CallbackContext context)
     {
         if (HasFlashlightInScene && context.performed)
         {
             FlashlightEquipped = !FlashlightEquipped;
+
+            if(FlashlightEquipped == true)
+            {
+                flashlightOn = false;
+                foreach (Light light in flashlightObjectParentedToPlayer.GetComponentsInChildren<Light>())
+                {
+                    //ensure the flashlight is turned off when equipping it from the inventory
+                    light.enabled = flashlightOn;
+                }
+            }
         }
         //Debug.Log("Equipping flashlight from inventory|| HasFlashlightInScene: " + HasFlashlightInScene + " FlashlightEquipped: " + FlashlightEquipped);
 
@@ -107,7 +120,7 @@ public class Flashlight : MonoBehaviour
         if (HasFlashlightInScene && FlashlightEquipped && context.performed)
         {
             flashlightOn = !flashlightOn;
-            Debug.Log("Toggling flashlight" + flashlightOn);
+            //Debug.Log("Toggling flashlight" + flashlightOn);
             foreach (Light light in flashlightObjectParentedToPlayer.GetComponentsInChildren<Light>())
             {
                 light.enabled = flashlightOn;
