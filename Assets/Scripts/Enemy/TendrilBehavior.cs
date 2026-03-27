@@ -148,6 +148,39 @@ public class TendrilBehavior : MonoBehaviour
         PrecalculateLocalCurve();
     }
 
+    public void Initialize(TendrilOrigin originPoint, ComplexEnemyAI owner, bool retractsManually)
+    {
+        origin = originPoint;
+        origin.activeTendril = this;
+        manualRetract = retractsManually;
+        initialized = true;
+
+        lineRenderer = GetComponentInChildren<LineRenderer>();
+        if (lineRenderer == null)
+        {
+            Debug.LogError("LineRenderer not found in children of " + gameObject.name);
+            return;
+        }
+
+        lineRenderer.positionCount = 2;
+        Vector3 endPoint = origin.transform.position + origin.transform.forward * 0.1f;
+
+        // Pick a random angle around the forward axis
+        float angle = Random.Range(0f, 360f);
+
+        // Use Quaternion to rotate the up vector around the forward axis
+        curveDirectionOffset = Quaternion.AngleAxis(angle, origin.transform.forward) * Vector3.up;
+
+        lineRenderer.SetPosition(0, origin.transform.position);
+        lineRenderer.SetPosition(1, endPoint);
+
+        // Raycast to find wall hit point
+        if (Physics.Raycast(origin.transform.position, origin.transform.forward, out RaycastHit hit, maxLength))
+            targetPoint = hit.point;
+        else
+            targetPoint = origin.transform.position + origin.transform.forward * maxLength;
+    }
+
     void Update()
     {
         if (!initialized || origin == null)

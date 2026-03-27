@@ -144,8 +144,6 @@ public class DoorScript : MonoBehaviour
     [SerializeField]
     private AudioClip doorAlarm;
 
-
-
     //private DialogueManager dialogueManager;
 
     //colors

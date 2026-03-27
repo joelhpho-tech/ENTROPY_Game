@@ -35,7 +35,7 @@ public class DoorManager : MonoBehaviour, ISaveable
     // locked colors
     [SerializeField]
     public Texture2D lockedTexture;
-    
+
     public Color LockedLightColor { get { return new Color(4.24f, 0.36f, 0.3f, 1.0f) * EmissiveMapIntensity; } }
     public Color LockedHoloBackColor = new Color(0.58f, 0.1f, 0.08f, 1.0f);
     public Color LockedHoloTextColor = new Color(1.0f, 0.3f, 0.2f, 1.0f);
@@ -80,6 +80,10 @@ public class DoorManager : MonoBehaviour, ISaveable
     // Start is called before the first frame update
     void Start()
     {
+        if(player == null)
+        {
+            player = FindFirstObjectByType<ZeroGravity>();
+        }
         doors = transform.Find("DoorGroup").GetComponentsInChildren<DoorScript>();
         doorsInRange = new List<DoorScript>();
         // continue from save

@@ -39,7 +39,7 @@ public class PickupScript : MonoBehaviour
 
     [SerializeField]
     private Collider playerCollider;
-    private GameObject current;
+    public GameObject current;
 
     [SerializeField] private PlayerAudio playerAudio;
 
@@ -185,6 +185,11 @@ public class PickupScript : MonoBehaviour
     {
         if (heldObj != null) //if player is holding object
         {
+            if (heldObj.GetComponent<FloatingImpactAudio>()) //only do this if the object has an audio source
+            {
+                //unmute the thrown object
+                StartCoroutine(heldObj.GetComponent<FloatingImpactAudio>().unmuteAfterTime());
+            }
             MoveObject(); //keep object position at holdPos
             ThrowObject();
 
@@ -194,6 +199,12 @@ public class PickupScript : MonoBehaviour
 
     void PickUpObject(GameObject pickUpObj)
     {
+        if (pickUpObj.GetComponent<AudioSource>()) //only do this if the object has an audio source
+        {
+            //mute the picked up object's audio source if we are holding it
+            pickUpObj.GetComponent<AudioSource>().mute = true;
+        }
+
         if (pickUpObj.GetComponent<Rigidbody>()) //make sure the object has a RigidBody
         {
             canPickUp = false;

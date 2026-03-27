@@ -8,6 +8,7 @@ public class EnvironmentAudio : MonoBehaviour
     public GameObject doorsContainer;
     public HazardLight hazardLight;
     private DoorScript[] doors;
+    private string doorContainerName = "DoorGroup";
 
     [Header("SFX Clips")]
     public AudioClip doorOpenClick;
@@ -23,6 +24,10 @@ public class EnvironmentAudio : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        if(doorsContainer == null)
+        {
+            doorsContainer = GameObject.Find(doorContainerName);
+        }
         doors = doorsContainer.GetComponentsInChildren<DoorScript>();
 
         foreach (DoorScript door in doors)

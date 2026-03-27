@@ -378,6 +378,8 @@ public class ZeroGravity : MonoBehaviour, ISaveable
 
     public int PlayerHealth { get { return playerHealth; } }
 
+    public int MaxHealth { get { return maxHealth; } }
+
     public int NumStims { get { return numStims; } }
 
     public bool IsDead
@@ -1561,6 +1563,21 @@ public class ZeroGravity : MonoBehaviour, ISaveable
         {
             UseStimCharge();
         }
+    }
+    #endregion
+
+
+    #region Level/ Scene Transferring
+
+    public void ApplySceneTransferState(Vector3 velocity, Vector3 angularVelocity, Quaternion camRotation)
+    {
+        rb.linearVelocity = velocity;
+        rb.angularVelocity = angularVelocity;
+        cam.transform.rotation = camRotation;
+        //clear input state so no phantom movement
+        rotationHoriz = 0f;
+        rotationVert = 0f;
+        rotationZ = 0f;
     }
     #endregion
 

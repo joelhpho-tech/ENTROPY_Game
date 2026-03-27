@@ -21,6 +21,9 @@ public class AudioCulling : MonoBehaviour
     {
         for (int i = 0; i < audioZones.Length; i++)
         { //for every audio zone...
+            // Skip destroyed zones
+            if (audioZones[i] == null) continue;
+
             if (audioZones[i].bounds.Contains(player.transform.position))
             { //if the audio zone has the player in it...
                 audioZones[i].Activate(); //activate all the audio sources in that zone

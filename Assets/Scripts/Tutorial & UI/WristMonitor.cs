@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 public class WristMonitor : MonoBehaviour
 {
@@ -15,7 +16,9 @@ public class WristMonitor : MonoBehaviour
 
     [Header("Dependencies")]
     [SerializeField] private ZeroGravity player;
-    [SerializeField] GameObject wristMonitorObject;
+    //[SerializeField] GameObject wristMonitorObject;
+    [SerializeField]
+    private bool hasWristMonitor = false;
     // checks the wrist monitor object and manipulates the state of having the wrist monitor accordingly
 
     [Header("Health Section")]
@@ -53,9 +56,15 @@ public class WristMonitor : MonoBehaviour
 
     public bool HasWristMonitor
     {
-        get { return !wristMonitorObject.activeSelf; }
-        set { wristMonitorObject.SetActive(!value); }
+        get { return hasWristMonitor; }
+        set {
+            if (hasWristMonitor == value) return;
+            hasWristMonitor = value;
+            OnWristMonitorAcquired?.Invoke(hasWristMonitor);
+        }
     }
+
+    public event System.Action<bool> OnWristMonitorAcquired;
     /// <summary>
     /// Public class used to display vital information to the player of how they must proceed
     /// </summary>
@@ -152,7 +161,7 @@ public class WristMonitor : MonoBehaviour
 
     public void ToggleMonitorObject()
     {
-        if (!wristMonitorObject.activeSelf)
+        if (hasWristMonitor)
         {
             isActive = !isActive;
         }

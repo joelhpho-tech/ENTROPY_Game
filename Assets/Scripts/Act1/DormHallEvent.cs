@@ -1,12 +1,14 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 public class DormHallEvent : MonoBehaviour, ISaveable
 {
     [SerializeField]
     private ZeroGravity player;
-
+    [SerializeField]
+    private GameObject wristMonitorPickupObject;
     // wrist monitor
     //whether or not player is within grab distance of the wrist monitor
     [SerializeField]
@@ -31,6 +33,9 @@ public class DormHallEvent : MonoBehaviour, ISaveable
 
     public StingerManager stingerManager;
 
+    private bool blinking = true;
+    private Coroutine blinkCoroutine;
+
     public bool CanGrab
     {
         get { return canGrab; }
@@ -51,13 +56,38 @@ public class DormHallEvent : MonoBehaviour, ISaveable
         dialogueManager = FindFirstObjectByType<DialogueManager>();
         // continue from save
         if (GlobalSaveManager.LoadFromSave) GlobalSaveManager.LoadSavable(this, false);
-        StartCoroutine(BlinkMonitor());
+
+        wristMonitor.OnWristMonitorAcquired += HandleWristMonitorAcquired;
+        blinkCoroutine = StartCoroutine(BlinkMonitor());
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnDestroy()
     {
-        
+        if (wristMonitor != null)
+        {
+            wristMonitor.OnWristMonitorAcquired -= HandleWristMonitorAcquired;
+        }
+    }
+
+    private void HandleWristMonitorAcquired(bool acquired)
+    {
+        if (acquired) blinking = false;
+    }
+
+    private IEnumerator BlinkMonitor()
+    {
+        while (blinking)
+        {
+            if(monitorLight == null) yield break;
+            monitorLight.enabled = true;
+            yield return new WaitForSeconds(0.5f);
+
+            if (monitorLight == null) yield break;
+            monitorLight.enabled = false;
+            yield return new WaitForSeconds(0.5f);
+        }
+        if (monitorLight != null)
+            monitorLight.enabled = false;
     }
 
     // This method is called by the input system when the player interacts with the wrist monitor
@@ -74,9 +104,15 @@ public class DormHallEvent : MonoBehaviour, ISaveable
 
             audioManager.playMonitorPickup();
 
-            //wrist.SetActive(false);
+            if (blinkCoroutine != null)
+            {
+                StopCoroutine(blinkCoroutine);
+                blinkCoroutine = null;
+            }
 
             wristMonitor.HasWristMonitor = true;
+            if (wristMonitorPickupObject != null)
+                wristMonitorPickupObject.SetActive(false);
 
             StartCoroutine(FadeCanvasGroup(wristMonitorTutorial, 0f, 1f));
 
@@ -154,7 +190,8 @@ public class DormHallEvent : MonoBehaviour, ISaveable
             if (loadedData == "False")
             {
                 isGrabbable = false;
-            } else if (loadedData == "True")
+            }
+            else if (loadedData == "True")
             {
                 isGrabbable = true;
             }
@@ -167,16 +204,17 @@ public class DormHallEvent : MonoBehaviour, ISaveable
         string path = Application.persistentDataPath;
         GlobalSaveManager.SaveTextToFile(path, fileName, isGrabbable.ToString());
     }
-
-    private IEnumerator BlinkMonitor()
-    {
-        while (wristMonitor.HasWristMonitor == false)
-        {
-            monitorLight.enabled = true;
-            yield return new WaitForSeconds(0.5f);
-
-            monitorLight.enabled = false;
-            yield return new WaitForSeconds(0.5f);
-        }
-    }
 }
+
+//    private IEnumerator BlinkMonitor()
+//    {
+//        while (wristMonitor.HasWristMonitor == false)
+//        {
+//            monitorLight.enabled = true;
+//            yield return new WaitForSeconds(0.5f);
+
+//            monitorLight.enabled = false;
+//            yield return new WaitForSeconds(0.5f);
+//        }
+//    }
+//}

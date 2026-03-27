@@ -41,6 +41,10 @@ public class MenuManager : MonoBehaviour
     // Camera effects
     [SerializeField] private GameObject _UICamera;
     private float _unscaledTime = 1000;
+
+    // Level Loading Screen Canvas
+    [SerializeField] private GameObject lvlLoadingScreen;
+
     public void Start()
     {
         activeMenus = new List<GameObject>();

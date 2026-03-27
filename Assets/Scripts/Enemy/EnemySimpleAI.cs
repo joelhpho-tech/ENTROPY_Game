@@ -65,6 +65,7 @@ public class EnemySimpleAI : MonoBehaviour
 
     private List<Waypoint> allWaypoints = new List<Waypoint>();
     private List<Waypoint> roamingWaypoints = new List<Waypoint>();
+    private Waypoint goalWaypoint;
 
 
     //private float distanceToPlayer;
@@ -467,21 +468,32 @@ public class EnemySimpleAI : MonoBehaviour
 
     void RoamArea()
     {
-        if (currentWaypoint == null) return;
-
-        // Choose a random neighbor if at the current waypoint
-        if (Vector3.Distance(transform.position, currentWaypoint.transform.position) < 0.1f)
+        // Pick new goal when we don't have one or reached current goal
+        if (goalWaypoint == null || (path.Count == 0 && Vector3.Distance(transform.position, currentWaypoint.transform.position) < 0.1f))
         {
-            Waypoint nextWaypoint = currentWaypoint.neighbors[Random.Range(0, currentWaypoint.neighbors.Count)];
-            currentWaypoint = nextWaypoint;
+            // Pick a random waypoint at least 20 units away
+            List<Waypoint> farWaypoints = allWaypoints.Where(wp =>
+                Vector3.Distance(transform.position, wp.transform.position) > 20f
+            ).ToList();
+
+            if (farWaypoints.Count > 0)
+            {
+                goalWaypoint = farWaypoints[Random.Range(0, farWaypoints.Count)];
+                path = BFS(currentWaypoint, goalWaypoint);
+            }
         }
 
-        transform.position = Vector3.MoveTowards(transform.position, currentWaypoint.transform.position, speed * Time.deltaTime);
-
-        // Switch to chase mode if player is nearby
-        if (Vector3.Distance(transform.position, player.transform.position) <= chaseDistance)
+        // Follow the path
+        if (path.Count > 0)
         {
-            isChasingPlayer = true;
+            Waypoint nextWaypoint = path.Peek();
+            transform.position = Vector3.MoveTowards(transform.position, nextWaypoint.transform.position, speed * Time.deltaTime);
+
+            if (Vector3.Distance(transform.position, nextWaypoint.transform.position) < 0.1f)
+            {
+                currentWaypoint = nextWaypoint;
+                path.Dequeue();
+            }
         }
     }
 

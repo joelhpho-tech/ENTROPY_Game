@@ -1623,7 +1623,15 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   wakeLossCooldown: 10
-  initialPosition: {x: 0, y: 0, z: 0}
+  currentWaypoint: {fileID: 0}
+  playerWaypoint: {fileID: 0}
+  targetWaypoint: {fileID: 0}
+  isChasingPlayer: 0
+  isStunned: 0
+  isCharging: 0
+  isLunging: 0
+  lungeTimer: 0
+  isAwake: 0
   availableOrigins: []
 --- !u!82 &8517424139226028849
 AudioSource:

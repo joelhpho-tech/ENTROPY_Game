@@ -7,7 +7,7 @@ public class CheckpointManager : MonoBehaviour, ISaveable
     [Tooltip("Ordered list of your checkpoints in scene")]
     [SerializeField]
     public List<Checkpoint> checkpoints;
-    public ZeroGravity playerZeroG;    // drag your player’s ZeroGravity component here
+    public ZeroGravity playerZeroG;    // drag your playerï¿½s ZeroGravity component here
 
     int _currentIndex = 0;
 

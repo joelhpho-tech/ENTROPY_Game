@@ -195,6 +195,40 @@ public class PlayerUIManager : MonoBehaviour
     }
     #endregion
 
+    private void Awake()
+    {
+        // scene - level managers
+        if(doorManager == null)
+        {
+            doorManager = FindFirstObjectByType<DoorManager>();
+        }
+        if(lockdownEvent == null)
+        {
+                lockdownEvent = FindFirstObjectByType<LockdownEvent>();
+        }
+        if(dormHallEvent == null)
+        {
+            dormHallEvent = FindFirstObjectByType<DormHallEvent>();
+        }
+        if(terminalManager == null)
+        {
+                terminalManager = FindFirstObjectByType<TerminalManager>();
+        }
+        if(wristMonitor == null)
+        {
+            wristMonitor = FindFirstObjectByType<WristMonitor>();
+        }
+        if(stimDispenserContainer == null)
+        {
+            stimDispenserContainer = GameObject.Find("StimDispensers");
+        }
+
+        if (stimDispenserContainer != null)
+        {
+            stimDispensers = stimDispenserContainer.GetComponentsInChildren<StimDispenser>();
+        }
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

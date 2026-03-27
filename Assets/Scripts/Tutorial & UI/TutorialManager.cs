@@ -101,6 +101,7 @@ public class TutorialManager : MonoBehaviour
         playerController = ZeroGPlayer.GetComponent<ZeroGravity>();
         pickupScript = ZeroGPlayer.GetComponent<PickupScript>();
         playerGrabRange = playerController.GrabRange;
+        playerController.TutorialMode = true;
 
         //determines if the player is to be in tutorial from the player controller's "TutorialMode" bool, which is saved by the GSM
         if (playerController.TutorialMode == true && !GlobalSaveManager.LoadFromSave)
