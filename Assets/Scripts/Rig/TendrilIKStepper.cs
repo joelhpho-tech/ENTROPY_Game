@@ -35,8 +35,6 @@ public class TendrilIKStepper : MonoBehaviour
     public AudioSource tendrilAudioPlayer;
     public AudioClip[] tendrilAudioBank;
 
-    private Quaternion targetRotation = Quaternion.identity;
-
     public Vector3 CurrentTarget { get; private set; }
     public bool StepRequested { get; private set; }
 
@@ -87,16 +85,18 @@ public class TendrilIKStepper : MonoBehaviour
                 ikTarget.position = CurrentTarget;
                 StepRequested = false;
             }
-            return;
         }
-
-        if (ShouldStep())
+        else if (ShouldStep())
         {
             Vector3? target = PickStepTarget();
             if (target == null) { SetPassive(); return; }
             CurrentTarget = target.Value;
             StepRequested = true;
         }
+
+        // Continuously align IK target rotation to the ray from body to planted point
+        Vector3 bodyToTarget = (CurrentTarget - body.position).normalized;
+        ikTarget.rotation = Quaternion.FromToRotation(Vector3.up, bodyToTarget);
     }
 
     public void SetPassive()
@@ -136,7 +136,6 @@ public class TendrilIKStepper : MonoBehaviour
         tendrilAudioPlayer.clip = tendrilAudioBank[Random.Range(0, tendrilAudioBank.Length)];
         tendrilAudioPlayer.Play();
 
-
         float halfGrab = grabAngle * 0.5f;
         float angle = Random.Range(0f, halfGrab);
         float roll = Random.Range(0f, 360f);
@@ -158,11 +157,8 @@ public class TendrilIKStepper : MonoBehaviour
         }
 
         if (Physics.Raycast(origin.position, biasDir, out RaycastHit hit, grabRange, groundMask))
-        {
-            targetRotation = Quaternion.FromToRotation(-Vector3.up, -biasDir.normalized);
             return hit.point + hit.normal * groundOffset;
-        }
-        
+
         return null;
     }
 
@@ -175,14 +171,16 @@ public class TendrilIKStepper : MonoBehaviour
         Gizmos.DrawWireSphere(CurrentTarget, 0.1f);
         Gizmos.DrawLine(origin.position, CurrentTarget);
 
+        // Draw the body-to-target ray
+        if (body != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawRay(body.position, (CurrentTarget - body.position));
+        }
+
         float halfGrab = grabAngle * 0.5f;
         int segments = 32;
-
         Vector3 prevPoint = Vector3.zero;
-        Gizmos.color = Color.green;
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawRay(CurrentTarget, targetRotation * Vector3.forward * 0.5f);
 
         for (int i = 0; i <= segments; i++)
         {
